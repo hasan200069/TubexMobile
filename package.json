@@ -11,7 +11,7 @@
     "ios": "expo start --ios",
     "web": "expo start --web",
     "build:apk": "eas build --platform android --profile preview",
-    "build:apk:prod": "eas build --platform android --profile production",
+    "build:aab": "eas build --platform android --profile production",
     "build:list": "eas build:list"
   },
   "dependencies": {
