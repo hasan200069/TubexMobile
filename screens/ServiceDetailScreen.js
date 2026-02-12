@@ -7,6 +7,7 @@ import {
   TouchableOpacity,
   Alert,
 } from 'react-native';
+import { SafeAreaView } from 'react-native-safe-area-context';
 import { LinearGradient } from 'expo-linear-gradient';
 import { Ionicons } from '@expo/vector-icons';
 import { useNavigation, useRoute } from '@react-navigation/native';
@@ -91,6 +92,7 @@ export default function ServiceDetailScreen() {
   if (!service) {
     return (
       <View style={styles.errorContainer}>
+        <Ionicons name="alert-circle" size={48} color="#666" />
         <Text style={styles.errorText}>Service information not available</Text>
       </View>
     );
@@ -114,117 +116,116 @@ export default function ServiceDetailScreen() {
   };
 
   return (
-    <ScrollView style={styles.container} showsVerticalScrollIndicator={false}>
-      <LinearGradient
-        colors={service.color || ['#4A90E2', '#357ABD']}
-        style={styles.header}
-      >
-        <View style={styles.iconContainer}>
-          <Ionicons name={service.icon} size={64} color="#FFFFFF" />
-        </View>
-        <Text style={styles.title}>{service.title}</Text>
-      </LinearGradient>
-
-      <View style={styles.content}>
-        <View style={styles.descriptionBox}>
-          <Text style={styles.description}>{details.fullDescription}</Text>
+    <SafeAreaView style={styles.safeArea} edges={['top']}>
+      <ScrollView style={styles.container} showsVerticalScrollIndicator={false}>
+        {/* Header */}
+        <View style={styles.header}>
+          <View style={[styles.iconContainer, { backgroundColor: `${service.color || '#4A90E2'}20` }]}>
+            <Ionicons name={service.icon} size={40} color={service.color || '#4A90E2'} />
+          </View>
+          <Text style={styles.title}>{service.title}</Text>
         </View>
 
-        <TouchableOpacity
-          style={styles.requestButton}
-          onPress={handleRequestService}
-          activeOpacity={0.8}
-        >
-          <LinearGradient
-            colors={service.color || ['#4A90E2', '#357ABD']}
-            style={styles.buttonGradient}
+        {/* Content */}
+        <View style={styles.content}>
+          <View style={styles.descriptionCard}>
+            <Text style={styles.description}>{details.fullDescription}</Text>
+          </View>
+
+          <TouchableOpacity
+            style={styles.requestButton}
+            onPress={handleRequestService}
+            activeOpacity={0.8}
           >
-            <Ionicons name="mail-outline" size={20} color="#FFFFFF" style={styles.buttonIcon} />
-            <Text style={styles.buttonText}>Request This Service</Text>
-          </LinearGradient>
-        </TouchableOpacity>
-      </View>
-    </ScrollView>
+            <LinearGradient
+              colors={[service.color || '#4A90E2', '#357ABD']}
+              style={styles.buttonGradient}
+            >
+              <Ionicons name="mail" size={20} color="#FFFFFF" />
+              <Text style={styles.buttonText}>Request This Service</Text>
+            </LinearGradient>
+          </TouchableOpacity>
+        </View>
+      </ScrollView>
+    </SafeAreaView>
   );
 }
 
 const styles = StyleSheet.create({
+  safeArea: {
+    flex: 1,
+    backgroundColor: '#0A1628',
+  },
   container: {
     flex: 1,
-    backgroundColor: '#F5F5F5',
+    backgroundColor: '#0A1628',
   },
   errorContainer: {
     flex: 1,
     justifyContent: 'center',
     alignItems: 'center',
     padding: 20,
+    backgroundColor: '#0A1628',
   },
   errorText: {
     fontSize: 16,
     color: '#666',
+    marginTop: 16,
   },
   header: {
-    padding: 40,
-    paddingTop: 60,
+    backgroundColor: '#1A1A2E',
+    paddingHorizontal: 20,
+    paddingTop: 16,
+    paddingBottom: 24,
     alignItems: 'center',
+    borderBottomWidth: 1,
+    borderBottomColor: '#2A2A3E',
   },
   iconContainer: {
-    marginBottom: 20,
+    width: 80,
+    height: 80,
+    borderRadius: 40,
+    justifyContent: 'center',
+    alignItems: 'center',
+    marginBottom: 16,
   },
   title: {
-    fontSize: 32,
+    fontSize: 24,
     fontWeight: 'bold',
     color: '#FFFFFF',
     textAlign: 'center',
   },
   content: {
-    padding: 20,
+    padding: 16,
   },
-  descriptionBox: {
-    backgroundColor: '#FFFFFF',
-    borderRadius: 15,
-    padding: 25,
-    marginBottom: 30,
-    shadowColor: '#000',
-    shadowOffset: {
-      width: 0,
-      height: 2,
-    },
-    shadowOpacity: 0.1,
-    shadowRadius: 8,
-    elevation: 5,
+  descriptionCard: {
+    backgroundColor: '#1A1A2E',
+    borderRadius: 12,
+    padding: 20,
+    marginBottom: 16,
+    borderWidth: 1,
+    borderColor: '#2A2A3E',
   },
   description: {
-    fontSize: 16,
-    color: '#333',
-    lineHeight: 26,
+    fontSize: 15,
+    color: '#B0B0B0',
+    lineHeight: 22,
   },
   requestButton: {
     borderRadius: 12,
     overflow: 'hidden',
-    shadowColor: '#000',
-    shadowOffset: {
-      width: 0,
-      height: 4,
-    },
-    shadowOpacity: 0.3,
-    shadowRadius: 8,
-    elevation: 8,
   },
   buttonGradient: {
-    paddingVertical: 18,
-    paddingHorizontal: 32,
-    alignItems: 'center',
+    paddingVertical: 16,
+    paddingHorizontal: 24,
     flexDirection: 'row',
+    alignItems: 'center',
     justifyContent: 'center',
-  },
-  buttonIcon: {
-    marginRight: 10,
+    gap: 8,
   },
   buttonText: {
     color: '#FFFFFF',
-    fontSize: 18,
-    fontWeight: 'bold',
+    fontSize: 16,
+    fontWeight: '600',
   },
 });
-

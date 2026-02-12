@@ -6,171 +6,165 @@ import {
   ScrollView,
   Image,
 } from 'react-native';
-import { LinearGradient } from 'expo-linear-gradient';
+import { SafeAreaView } from 'react-native-safe-area-context';
 import { Ionicons } from '@expo/vector-icons';
+
+const aboutSections = [
+  {
+    icon: 'business',
+    title: 'Company Overview',
+    content: 'Premier IT services company in Dubai, delivering cutting-edge technology solutions that empower businesses to thrive in the digital age.',
+  },
+  {
+    icon: 'flag',
+    title: 'Our Mission',
+    content: 'Bridge the gap between business challenges and technological solutions. We strive to be the trusted technology partner for businesses across the Middle East.',
+  },
+  {
+    icon: 'star',
+    title: 'What Sets Us Apart',
+    content: 'Deep expertise in modern technologies • Client-centric approach • Commitment to quality • Strong Dubai market presence • Comprehensive support services',
+  },
+  {
+    icon: 'location',
+    title: 'Dubai-Based Excellence',
+    content: 'Unique insights into regional market dynamics, business culture, and regulatory environment. We understand the specific needs of Middle East businesses.',
+  },
+];
 
 export default function AboutScreen() {
   return (
-    <ScrollView style={styles.container} showsVerticalScrollIndicator={false}>
-      <LinearGradient
-        colors={['#0A1628', '#1A1A2E']}
-        style={styles.header}
-      >
-        <Image
-          source={require('../assets/logo.png')}
-          style={styles.logo}
-          resizeMode="contain"
-        />
-        <Text style={styles.headerTitle}>About Tubex Dubai</Text>
-      </LinearGradient>
+    <SafeAreaView style={styles.safeArea} edges={['top']}>
+      <ScrollView style={styles.container} showsVerticalScrollIndicator={false}>
+        {/* Header */}
+        <View style={styles.header}>
+          <Image
+            source={require('../assets/logo.png')}
+            style={styles.logo}
+            resizeMode="contain"
+          />
+          <Text style={styles.headerTitle}>About Tubex Dubai</Text>
+          <Text style={styles.headerSubtitle}>Innovation • Excellence • Trust</Text>
+        </View>
 
-      <View style={styles.content}>
-        <View style={styles.section}>
-          <View style={styles.iconBox}>
-            <Ionicons name="business-outline" size={32} color="#4A90E2" />
+        {/* About Sections */}
+        <View style={styles.content}>
+          {aboutSections.map((section, index) => (
+            <View key={index} style={styles.sectionCard}>
+              <View style={styles.sectionHeader}>
+                <View style={styles.sectionIconContainer}>
+                  <Ionicons name={section.icon} size={24} color="#4A90E2" />
+                </View>
+                <Text style={styles.sectionTitle}>{section.title}</Text>
+              </View>
+              <Text style={styles.sectionText}>{section.content}</Text>
+            </View>
+          ))}
+
+          {/* CTA Card */}
+          <View style={styles.ctaCard}>
+            <Ionicons name="rocket" size={32} color="#4A90E2" />
+            <Text style={styles.ctaTitle}>Ready to Get Started?</Text>
+            <Text style={styles.ctaText}>
+              Let's discuss how we can help transform your business with our IT solutions.
+            </Text>
           </View>
-          <Text style={styles.sectionTitle}>Company Overview</Text>
-          <Text style={styles.sectionText}>
-            Tubex Dubai is a premier IT services company headquartered in the
-            vibrant business hub of Dubai. We specialize in delivering
-            cutting-edge technology solutions that empower businesses to thrive
-            in the digital age. With a team of experienced professionals and a
-            passion for innovation, we help companies transform their operations,
-            enhance customer experiences, and achieve sustainable growth.
-          </Text>
         </View>
-
-        <View style={styles.section}>
-          <View style={styles.iconBox}>
-            <Ionicons name="flag-outline" size={32} color="#4A90E2" />
-          </View>
-          <Text style={styles.sectionTitle}>Our Mission</Text>
-          <Text style={styles.sectionText}>
-            Our mission is to bridge the gap between business challenges and
-            technological solutions. We strive to be the trusted technology
-            partner for businesses across the Middle East, delivering solutions
-            that are not only innovative but also practical, scalable, and
-            aligned with our clients' strategic objectives.
-          </Text>
-        </View>
-
-        <View style={styles.section}>
-          <View style={styles.iconBox}>
-            <Ionicons name="star-outline" size={32} color="#4A90E2" />
-          </View>
-          <Text style={styles.sectionTitle}>What Sets Us Apart</Text>
-          <Text style={styles.sectionText}>
-            • Deep expertise in modern technologies and frameworks{'\n'}
-            • Client-centric approach with personalized solutions{'\n'}
-            • Commitment to quality and timely delivery{'\n'}
-            • Strong presence in the Dubai market{'\n'}
-            • Comprehensive support and maintenance services{'\n'}
-            • Continuous innovation and learning culture
-          </Text>
-        </View>
-
-        <View style={styles.section}>
-          <View style={styles.iconBox}>
-            <Ionicons name="location-outline" size={32} color="#4A90E2" />
-          </View>
-          <Text style={styles.sectionTitle}>Dubai-Based Excellence</Text>
-          <Text style={styles.sectionText}>
-            Being based in Dubai gives us unique insights into the regional
-            market dynamics, business culture, and regulatory environment. We
-            understand the specific needs of businesses operating in the Middle
-            East and tailor our solutions accordingly. Our strategic location
-            also enables us to serve clients across the region efficiently.
-          </Text>
-        </View>
-
-        <View style={styles.contactBox}>
-          <Text style={styles.contactTitle}>Ready to Get Started?</Text>
-          <Text style={styles.contactText}>
-            Let's discuss how we can help transform your business with our IT
-            solutions.
-          </Text>
-        </View>
-      </View>
-    </ScrollView>
+      </ScrollView>
+    </SafeAreaView>
   );
 }
 
 const styles = StyleSheet.create({
+  safeArea: {
+    flex: 1,
+    backgroundColor: '#0A1628',
+  },
   container: {
     flex: 1,
-    backgroundColor: '#F5F5F5',
+    backgroundColor: '#0A1628',
   },
   header: {
-    padding: 40,
-    paddingTop: 60,
+    backgroundColor: '#1A1A2E',
+    paddingHorizontal: 20,
+    paddingTop: 16,
+    paddingBottom: 24,
     alignItems: 'center',
+    borderBottomWidth: 1,
+    borderBottomColor: '#2A2A3E',
   },
   logo: {
-    width: 100,
-    height: 100,
-    marginBottom: 20,
+    width: 80,
+    height: 80,
+    marginBottom: 16,
   },
   headerTitle: {
-    fontSize: 32,
+    fontSize: 28,
     fontWeight: 'bold',
     color: '#FFFFFF',
+    marginBottom: 4,
+  },
+  headerSubtitle: {
+    fontSize: 14,
+    color: '#4A90E2',
+    fontWeight: '500',
   },
   content: {
-    padding: 20,
+    padding: 16,
   },
-  section: {
-    backgroundColor: '#FFFFFF',
-    borderRadius: 15,
-    padding: 25,
-    marginBottom: 20,
-    shadowColor: '#000',
-    shadowOffset: {
-      width: 0,
-      height: 2,
-    },
-    shadowOpacity: 0.1,
-    shadowRadius: 8,
-    elevation: 5,
+  sectionCard: {
+    backgroundColor: '#1A1A2E',
+    borderRadius: 12,
+    padding: 16,
+    marginBottom: 12,
+    borderWidth: 1,
+    borderColor: '#2A2A3E',
   },
-  iconBox: {
-    width: 60,
-    height: 60,
-    borderRadius: 30,
-    backgroundColor: '#F0F7FF',
-    justifyContent: 'center',
+  sectionHeader: {
+    flexDirection: 'row',
     alignItems: 'center',
-    marginBottom: 15,
-  },
-  sectionTitle: {
-    fontSize: 22,
-    fontWeight: 'bold',
-    color: '#0A1628',
     marginBottom: 12,
   },
+  sectionIconContainer: {
+    width: 40,
+    height: 40,
+    borderRadius: 20,
+    backgroundColor: '#4A90E220',
+    justifyContent: 'center',
+    alignItems: 'center',
+    marginRight: 12,
+  },
+  sectionTitle: {
+    fontSize: 18,
+    fontWeight: '600',
+    color: '#FFFFFF',
+    flex: 1,
+  },
   sectionText: {
-    fontSize: 16,
-    color: '#666',
-    lineHeight: 24,
+    fontSize: 14,
+    color: '#B0B0B0',
+    lineHeight: 20,
   },
-  contactBox: {
-    backgroundColor: '#0A1628',
-    borderRadius: 15,
-    padding: 30,
-    marginTop: 10,
-    marginBottom: 20,
+  ctaCard: {
+    backgroundColor: '#1A1A2E',
+    borderRadius: 12,
+    padding: 24,
+    marginTop: 8,
+    alignItems: 'center',
+    borderWidth: 1,
+    borderColor: '#4A90E2',
   },
-  contactTitle: {
-    fontSize: 24,
+  ctaTitle: {
+    fontSize: 20,
     fontWeight: 'bold',
     color: '#FFFFFF',
-    marginBottom: 10,
-    textAlign: 'center',
+    marginTop: 12,
+    marginBottom: 8,
   },
-  contactText: {
-    fontSize: 16,
-    color: '#4A90E2',
+  ctaText: {
+    fontSize: 14,
+    color: '#B0B0B0',
     textAlign: 'center',
-    lineHeight: 24,
+    lineHeight: 20,
   },
 });
-

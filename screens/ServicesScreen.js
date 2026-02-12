@@ -5,50 +5,47 @@ import {
   StyleSheet,
   ScrollView,
   TouchableOpacity,
-  Dimensions,
 } from 'react-native';
+import { SafeAreaView } from 'react-native-safe-area-context';
 import { LinearGradient } from 'expo-linear-gradient';
 import { Ionicons } from '@expo/vector-icons';
 import { useNavigation } from '@react-navigation/native';
-
-const { width } = Dimensions.get('window');
-const cardWidth = width - 40;
 
 const services = [
   {
     id: 1,
     title: 'Mobile App Development',
-    description: 'Native and cross-platform mobile applications for iOS and Android',
-    icon: 'phone-portrait-outline',
-    color: ['#4A90E2', '#357ABD'],
+    description: 'Native and cross-platform mobile applications',
+    icon: 'phone-portrait',
+    color: '#4A90E2',
   },
   {
     id: 2,
     title: 'Web Development',
-    description: 'Responsive web applications and modern websites built with latest technologies',
-    icon: 'globe-outline',
-    color: ['#50C878', '#45B369'],
+    description: 'Modern web applications and websites',
+    icon: 'globe',
+    color: '#50C878',
   },
   {
     id: 3,
     title: 'AI Automation',
-    description: 'Intelligent automation solutions powered by artificial intelligence',
-    icon: 'flash-outline',
-    color: ['#FF6B6B', '#EE5A6F'],
+    description: 'Intelligent automation solutions',
+    icon: 'flash',
+    color: '#FF6B6B',
   },
   {
     id: 4,
     title: 'Blockchain Solutions',
-    description: 'Decentralized applications and blockchain-based solutions',
-    icon: 'cube-outline',
-    color: ['#9B59B6', '#8E44AD'],
+    description: 'Decentralized applications and solutions',
+    icon: 'cube',
+    color: '#9B59B6',
   },
   {
     id: 5,
     title: 'Cloud & DevOps',
-    description: 'Cloud infrastructure setup, migration, and DevOps automation',
-    icon: 'cloud-outline',
-    color: ['#F39C12', '#E67E22'],
+    description: 'Cloud infrastructure and DevOps automation',
+    icon: 'cloud',
+    color: '#F39C12',
   },
 ];
 
@@ -60,105 +57,103 @@ export default function ServicesScreen() {
   };
 
   return (
-    <ScrollView style={styles.container} showsVerticalScrollIndicator={false}>
-      <View style={styles.header}>
-        <Text style={styles.headerTitle}>Our Services</Text>
-        <Text style={styles.headerSubtitle}>
-          Comprehensive IT solutions tailored to your business needs
-        </Text>
-      </View>
+    <SafeAreaView style={styles.safeArea} edges={['top']}>
+      <ScrollView style={styles.container} showsVerticalScrollIndicator={false}>
+        <View style={styles.header}>
+          <Text style={styles.headerTitle}>Our Services</Text>
+          <Text style={styles.headerSubtitle}>Comprehensive IT solutions</Text>
+        </View>
 
-      <View style={styles.servicesContainer}>
-        {services.map((service) => (
-          <TouchableOpacity
-            key={service.id}
-            style={styles.serviceCard}
-            onPress={() => handleServicePress(service)}
-            activeOpacity={0.8}
-          >
-            <LinearGradient
-              colors={service.color}
-              style={styles.cardGradient}
-              start={{ x: 0, y: 0 }}
-              end={{ x: 1, y: 1 }}
+        <View style={styles.servicesList}>
+          {services.map((service) => (
+            <TouchableOpacity
+              key={service.id}
+              style={styles.serviceCard}
+              onPress={() => handleServicePress(service)}
+              activeOpacity={0.7}
             >
-              <View style={styles.iconContainer}>
-                <Ionicons name={service.icon} size={48} color="#FFFFFF" />
+              <View style={styles.serviceCardContent}>
+                <View style={[styles.serviceIconContainer, { backgroundColor: `${service.color}20` }]}>
+                  <Ionicons name={service.icon} size={32} color={service.color} />
+                </View>
+                <View style={styles.serviceInfo}>
+                  <Text style={styles.serviceTitle}>{service.title}</Text>
+                  <Text style={styles.serviceDescription}>{service.description}</Text>
+                </View>
+                <Ionicons name="chevron-forward" size={24} color="#666" />
               </View>
-              <Text style={styles.cardTitle}>{service.title}</Text>
-              <Text style={styles.cardDescription}>{service.description}</Text>
-              <View style={styles.arrowContainer}>
-                <Ionicons name="arrow-forward" size={20} color="#FFFFFF" />
-              </View>
-            </LinearGradient>
-          </TouchableOpacity>
-        ))}
-      </View>
-    </ScrollView>
+            </TouchableOpacity>
+          ))}
+        </View>
+      </ScrollView>
+    </SafeAreaView>
   );
 }
 
 const styles = StyleSheet.create({
+  safeArea: {
+    flex: 1,
+    backgroundColor: '#0A1628',
+  },
   container: {
     flex: 1,
-    backgroundColor: '#F5F5F5',
+    backgroundColor: '#0A1628',
   },
   header: {
-    backgroundColor: '#0A1628',
-    padding: 30,
-    paddingTop: 60,
-    paddingBottom: 30,
+    backgroundColor: '#1A1A2E',
+    paddingHorizontal: 20,
+    paddingTop: 16,
+    paddingBottom: 20,
+    borderBottomWidth: 1,
+    borderBottomColor: '#2A2A3E',
   },
   headerTitle: {
-    fontSize: 32,
+    fontSize: 28,
     fontWeight: 'bold',
     color: '#FFFFFF',
-    marginBottom: 10,
+    marginBottom: 4,
   },
   headerSubtitle: {
-    fontSize: 16,
+    fontSize: 14,
     color: '#4A90E2',
-    fontWeight: '300',
+    fontWeight: '500',
   },
-  servicesContainer: {
-    padding: 20,
-    gap: 20,
+  servicesList: {
+    padding: 16,
   },
   serviceCard: {
-    borderRadius: 20,
+    backgroundColor: '#1A1A2E',
+    borderRadius: 12,
+    marginBottom: 12,
+    borderWidth: 1,
+    borderColor: '#2A2A3E',
     overflow: 'hidden',
-    shadowColor: '#000',
-    shadowOffset: {
-      width: 0,
-      height: 4,
-    },
-    shadowOpacity: 0.3,
-    shadowRadius: 8,
-    elevation: 8,
   },
-  cardGradient: {
-    padding: 25,
-    minHeight: 200,
+  serviceCardContent: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    padding: 16,
   },
-  iconContainer: {
-    marginBottom: 15,
+  serviceIconContainer: {
+    width: 56,
+    height: 56,
+    borderRadius: 28,
+    justifyContent: 'center',
+    alignItems: 'center',
+    marginRight: 16,
   },
-  cardTitle: {
-    fontSize: 24,
-    fontWeight: 'bold',
-    color: '#FFFFFF',
-    marginBottom: 10,
+  serviceInfo: {
+    flex: 1,
   },
-  cardDescription: {
+  serviceTitle: {
     fontSize: 16,
+    fontWeight: '600',
     color: '#FFFFFF',
-    opacity: 0.9,
-    lineHeight: 22,
-    marginBottom: 15,
+    marginBottom: 4,
   },
-  arrowContainer: {
-    alignSelf: 'flex-end',
-    marginTop: 'auto',
+  serviceDescription: {
+    fontSize: 13,
+    color: '#B0B0B0',
+    lineHeight: 18,
   },
 });
-

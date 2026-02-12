@@ -6,169 +6,241 @@ import {
   Image,
   TouchableOpacity,
   ScrollView,
-  Dimensions,
 } from 'react-native';
+import { SafeAreaView } from 'react-native-safe-area-context';
 import { LinearGradient } from 'expo-linear-gradient';
+import { Ionicons } from '@expo/vector-icons';
 import { useNavigation } from '@react-navigation/native';
-
-const { width } = Dimensions.get('window');
 
 export default function HomeScreen() {
   const navigation = useNavigation();
 
-  return (
-    <ScrollView style={styles.container} showsVerticalScrollIndicator={false}>
-      <LinearGradient
-        colors={['#0A1628', '#1A1A2E']}
-        style={styles.heroSection}
-      >
-        <Image
-          source={require('../assets/logo.png')}
-          style={styles.logo}
-          resizeMode="contain"
-        />
-        <Text style={styles.title}>Tubex Dubai</Text>
-        <Text style={styles.tagline}>
-          Transforming Businesses with Cutting-Edge IT Solutions
-        </Text>
-      </LinearGradient>
+  const quickActions = [
+    { icon: 'grid', label: 'Services', screen: 'Services', color: '#4A90E2' },
+    { icon: 'mail', label: 'Contact', screen: 'Contact', color: '#50C878' },
+    { icon: 'information-circle', label: 'About', screen: 'About', color: '#FF6B6B' },
+  ];
 
-      <View style={styles.contentSection}>
-        <View style={styles.descriptionBox}>
-          <Text style={styles.descriptionTitle}>Welcome to Tubex Dubai</Text>
-          <Text style={styles.description}>
-            We are a leading IT services company based in Dubai, dedicated to
-            providing innovative technology solutions that drive business growth
-            and digital transformation. Our expertise spans across mobile app
-            development, web solutions, AI automation, blockchain technologies,
-            and cloud infrastructure.
+  return (
+    <SafeAreaView style={styles.safeArea} edges={['top']}>
+      <ScrollView style={styles.container} showsVerticalScrollIndicator={false}>
+        {/* Compact Header */}
+        <View style={styles.header}>
+          <View style={styles.headerContent}>
+            <Image
+              source={require('../assets/logo.png')}
+              style={styles.logo}
+              resizeMode="contain"
+            />
+            <View style={styles.headerText}>
+              <Text style={styles.title}>Tubex Dubai</Text>
+              <Text style={styles.tagline}>IT Solutions & Innovation</Text>
+            </View>
+          </View>
+        </View>
+
+        {/* Quick Actions */}
+        <View style={styles.quickActionsContainer}>
+          <Text style={styles.sectionTitle}>Quick Actions</Text>
+          <View style={styles.quickActionsGrid}>
+            {quickActions.map((action, index) => (
+              <TouchableOpacity
+                key={index}
+                style={styles.quickActionCard}
+                onPress={() => navigation.navigate(action.screen)}
+                activeOpacity={0.7}
+              >
+                <View style={[styles.quickActionIcon, { backgroundColor: `${action.color}15` }]}>
+                  <Ionicons name={action.icon} size={28} color={action.color} />
+                </View>
+                <Text style={styles.quickActionLabel}>{action.label}</Text>
+              </TouchableOpacity>
+            ))}
+          </View>
+        </View>
+
+        {/* Welcome Card */}
+        <View style={styles.welcomeCard}>
+          <View style={styles.welcomeHeader}>
+            <Ionicons name="sparkles" size={24} color="#4A90E2" />
+            <Text style={styles.welcomeTitle}>Welcome</Text>
+          </View>
+          <Text style={styles.welcomeText}>
+            Leading IT services company in Dubai, delivering innovative technology solutions 
+            for business growth and digital transformation.
           </Text>
         </View>
 
-        <View style={styles.buttonContainer}>
+        {/* CTA Buttons */}
+        <View style={styles.ctaContainer}>
           <TouchableOpacity
-            style={styles.primaryButton}
+            style={styles.primaryCTA}
             onPress={() => navigation.navigate('Services')}
             activeOpacity={0.8}
           >
             <LinearGradient
               colors={['#4A90E2', '#357ABD']}
-              style={styles.buttonGradient}
+              style={styles.ctaGradient}
             >
-              <Text style={styles.buttonText}>Our Services</Text>
+              <Ionicons name="grid-outline" size={20} color="#FFFFFF" />
+              <Text style={styles.ctaText}>Explore Services</Text>
             </LinearGradient>
           </TouchableOpacity>
 
           <TouchableOpacity
-            style={styles.secondaryButton}
+            style={styles.secondaryCTA}
             onPress={() => navigation.navigate('Contact')}
             activeOpacity={0.8}
           >
-            <Text style={styles.secondaryButtonText}>Contact Us</Text>
+            <Ionicons name="mail-outline" size={20} color="#4A90E2" />
+            <Text style={styles.secondaryCTAText}>Get In Touch</Text>
           </TouchableOpacity>
         </View>
-      </View>
-    </ScrollView>
+      </ScrollView>
+    </SafeAreaView>
   );
 }
 
 const styles = StyleSheet.create({
+  safeArea: {
+    flex: 1,
+    backgroundColor: '#0A1628',
+  },
   container: {
     flex: 1,
-    backgroundColor: '#F5F5F5',
+    backgroundColor: '#0A1628',
   },
-  heroSection: {
-    width: '100%',
-    paddingTop: 60,
-    paddingBottom: 40,
-    alignItems: 'center',
+  header: {
+    backgroundColor: '#1A1A2E',
     paddingHorizontal: 20,
+    paddingTop: 16,
+    paddingBottom: 20,
+    borderBottomWidth: 1,
+    borderBottomColor: '#2A2A3E',
+  },
+  headerContent: {
+    flexDirection: 'row',
+    alignItems: 'center',
   },
   logo: {
-    width: 120,
-    height: 120,
-    marginBottom: 20,
+    width: 60,
+    height: 60,
+    marginRight: 12,
+  },
+  headerText: {
+    flex: 1,
   },
   title: {
-    fontSize: 36,
-    fontWeight: 'bold',
-    color: '#FFFFFF',
-    marginBottom: 10,
-    letterSpacing: 1,
-  },
-  tagline: {
-    fontSize: 18,
-    color: '#4A90E2',
-    textAlign: 'center',
-    fontWeight: '300',
-    paddingHorizontal: 20,
-  },
-  contentSection: {
-    padding: 20,
-  },
-  descriptionBox: {
-    backgroundColor: '#FFFFFF',
-    borderRadius: 15,
-    padding: 25,
-    marginBottom: 30,
-    shadowColor: '#000',
-    shadowOffset: {
-      width: 0,
-      height: 2,
-    },
-    shadowOpacity: 0.1,
-    shadowRadius: 8,
-    elevation: 5,
-  },
-  descriptionTitle: {
     fontSize: 24,
     fontWeight: 'bold',
-    color: '#0A1628',
-    marginBottom: 15,
+    color: '#FFFFFF',
+    marginBottom: 4,
   },
-  description: {
-    fontSize: 16,
-    color: '#666',
-    lineHeight: 24,
+  tagline: {
+    fontSize: 14,
+    color: '#4A90E2',
+    fontWeight: '500',
   },
-  buttonContainer: {
-    gap: 15,
+  quickActionsContainer: {
+    padding: 20,
   },
-  primaryButton: {
+  sectionTitle: {
+    fontSize: 18,
+    fontWeight: '600',
+    color: '#FFFFFF',
+    marginBottom: 16,
+  },
+  quickActionsGrid: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    marginBottom: 8,
+  },
+  quickActionCard: {
+    flex: 1,
+    backgroundColor: '#1A1A2E',
+    borderRadius: 12,
+    padding: 16,
+    alignItems: 'center',
+    marginHorizontal: 4,
+    borderWidth: 1,
+    borderColor: '#2A2A3E',
+  },
+  quickActionIcon: {
+    width: 56,
+    height: 56,
+    borderRadius: 28,
+    justifyContent: 'center',
+    alignItems: 'center',
+    marginBottom: 8,
+  },
+  quickActionLabel: {
+    fontSize: 12,
+    color: '#FFFFFF',
+    fontWeight: '500',
+    textAlign: 'center',
+  },
+  welcomeCard: {
+    backgroundColor: '#1A1A2E',
+    marginHorizontal: 20,
+    marginBottom: 20,
+    borderRadius: 16,
+    padding: 20,
+    borderWidth: 1,
+    borderColor: '#2A2A3E',
+  },
+  welcomeHeader: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    marginBottom: 12,
+  },
+  welcomeTitle: {
+    fontSize: 20,
+    fontWeight: 'bold',
+    color: '#FFFFFF',
+    marginLeft: 8,
+  },
+  welcomeText: {
+    fontSize: 14,
+    color: '#B0B0B0',
+    lineHeight: 20,
+  },
+  ctaContainer: {
+    paddingHorizontal: 20,
+    paddingBottom: 20,
+    gap: 12,
+  },
+  primaryCTA: {
     borderRadius: 12,
     overflow: 'hidden',
-    shadowColor: '#4A90E2',
-    shadowOffset: {
-      width: 0,
-      height: 4,
-    },
-    shadowOpacity: 0.3,
-    shadowRadius: 8,
-    elevation: 8,
   },
-  buttonGradient: {
+  ctaGradient: {
     paddingVertical: 16,
-    paddingHorizontal: 32,
+    paddingHorizontal: 24,
+    flexDirection: 'row',
     alignItems: 'center',
+    justifyContent: 'center',
+    gap: 8,
   },
-  buttonText: {
+  ctaText: {
     color: '#FFFFFF',
-    fontSize: 18,
-    fontWeight: 'bold',
+    fontSize: 16,
+    fontWeight: '600',
   },
-  secondaryButton: {
+  secondaryCTA: {
+    backgroundColor: '#1A1A2E',
     borderRadius: 12,
     paddingVertical: 16,
-    paddingHorizontal: 32,
+    paddingHorizontal: 24,
+    flexDirection: 'row',
     alignItems: 'center',
-    backgroundColor: '#FFFFFF',
-    borderWidth: 2,
+    justifyContent: 'center',
+    gap: 8,
+    borderWidth: 1,
     borderColor: '#4A90E2',
   },
-  secondaryButtonText: {
+  secondaryCTAText: {
     color: '#4A90E2',
-    fontSize: 18,
-    fontWeight: 'bold',
+    fontSize: 16,
+    fontWeight: '600',
   },
 });
-

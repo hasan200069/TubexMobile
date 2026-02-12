@@ -11,9 +11,11 @@ import {
   Platform,
   Linking,
 } from 'react-native';
+import { SafeAreaView } from 'react-native-safe-area-context';
 import { LinearGradient } from 'expo-linear-gradient';
 import { Ionicons } from '@expo/vector-icons';
 import { useRoute } from '@react-navigation/native';
+import notificationService from '../services/notificationService';
 
 const services = [
   'Mobile App Development',
@@ -40,29 +42,66 @@ export default function ContactScreen() {
     setFormData((prev) => ({ ...prev, [field]: value }));
   };
 
-  const handleSubmit = () => {
-    // Validate form
+  const openWhatsApp = () => {
+    const phoneNumber = '97143976100';
+    const whatsappUrl = `whatsapp://send?phone=${phoneNumber}`;
+    const webWhatsappUrl = `https://wa.me/${phoneNumber}`;
+    
+    Linking.canOpenURL(whatsappUrl).then((supported) => {
+      if (supported) {
+        Linking.openURL(whatsappUrl);
+      } else {
+        Linking.canOpenURL(webWhatsappUrl).then((webSupported) => {
+          if (webSupported) {
+            Linking.openURL(webWhatsappUrl);
+          } else {
+            Alert.alert(
+              'WhatsApp Not Found',
+              'WhatsApp is not installed. Would you like to call instead?',
+              [
+                { text: 'Cancel', style: 'cancel' },
+                {
+                  text: 'Call',
+                  onPress: () => Linking.openURL('tel:+97143976100'),
+                },
+              ]
+            );
+          }
+        }).catch(() => {
+          Linking.openURL('tel:+97143976100');
+        });
+      }
+    }).catch((err) => {
+      console.error('Error opening WhatsApp:', err);
+      Linking.openURL('tel:+97143976100');
+    });
+  };
+
+  const handleSubmit = async () => {
     if (!formData.name.trim() || !formData.email.trim() || !formData.phone.trim()) {
       Alert.alert('Validation Error', 'Please fill in all required fields.');
       return;
     }
 
-    // Email validation
     const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
     if (!emailRegex.test(formData.email)) {
       Alert.alert('Validation Error', 'Please enter a valid email address.');
       return;
     }
 
-    // Show success alert with email info
+    try {
+      await notificationService.sendFormSubmissionNotification(formData);
+    } catch (error) {
+      console.error('Error sending notification:', error);
+    }
+
     Alert.alert(
       'Request Submitted',
-      `Thank you for contacting Tubex Dubai! Your message will be sent to info@tubexdubai.com. We will get back to you shortly.`,
+      `Thank you for contacting Tubex Dubai! We will get back to you shortly.`,
       [
         {
           text: 'OK',
           onPress: () => {
-            // Reset form
             setFormData({
               name: '',
               email: '',
@@ -75,7 +114,6 @@ export default function ContactScreen() {
         {
           text: 'Send Email',
           onPress: () => {
-            // Create mailto link with form data
             const subject = encodeURIComponent(formData.service ? `Inquiry: ${formData.service}` : 'Contact Inquiry');
             const body = encodeURIComponent(
               `Name: ${formData.name}\nEmail: ${formData.email}\nPhone: ${formData.phone}\n\nMessage:\n${formData.message || 'No message provided'}`
@@ -88,7 +126,6 @@ export default function ContactScreen() {
               }
             });
             
-            // Reset form
             setFormData({
               name: '',
               email: '',
@@ -102,123 +139,99 @@ export default function ContactScreen() {
     );
   };
 
+  const contactMethods = [
+    {
+      icon: 'location',
+      label: 'Address',
+      value: 'Office No 15-17-19, M floor\nAl Manazel Building - Al Garhoud\nDubai UAE',
+      color: '#4A90E2',
+      action: null,
+    },
+    {
+      icon: 'mail',
+      label: 'Email',
+      value: 'info@tubexdubai.com',
+      color: '#50C878',
+      action: () => Linking.openURL('mailto:info@tubexdubai.com'),
+    },
+    {
+      icon: 'chatbubble-ellipses',
+      label: 'WhatsApp',
+      value: '+971 4 397 6100',
+      color: '#25D366',
+      action: openWhatsApp,
+    },
+    {
+      icon: 'time',
+      label: 'Business Hours',
+      value: 'Mon-Fri: 09:00 AM – 05:00 PM\nSat-Sun: Closed',
+      color: '#FF6B6B',
+      action: null,
+    },
+  ];
+
   return (
-    <KeyboardAvoidingView
-      style={styles.container}
-      behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
-    >
-      <ScrollView
-        style={styles.scrollView}
-        contentContainerStyle={styles.scrollContent}
-        showsVerticalScrollIndicator={false}
-        keyboardShouldPersistTaps="handled"
+    <SafeAreaView style={styles.safeArea} edges={['top']}>
+      <KeyboardAvoidingView
+        style={styles.container}
+        behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
       >
-        <LinearGradient
-          colors={['#0A1628', '#1A1A2E']}
-          style={styles.header}
+        <ScrollView
+          style={styles.scrollView}
+          contentContainerStyle={styles.scrollContent}
+          showsVerticalScrollIndicator={false}
+          keyboardShouldPersistTaps="handled"
         >
-          <Ionicons name="mail-outline" size={48} color="#4A90E2" />
-          <Text style={styles.headerTitle}>Get In Touch</Text>
-          <Text style={styles.headerSubtitle}>
-            Ready to transform your business? Let's discuss your project.
-          </Text>
-        </LinearGradient>
-
-        {/* Contact Information Section */}
-        <View style={styles.contactInfoSection}>
-          <Text style={styles.sectionTitle}>Contact Information</Text>
-          
-          <View style={styles.contactItem}>
-            <View style={styles.contactIconContainer}>
-              <Ionicons name="location-outline" size={24} color="#4A90E2" />
-            </View>
-            <View style={styles.contactTextContainer}>
-              <Text style={styles.contactLabel}>Address</Text>
-              <Text style={styles.contactValue}>
-                Office No 15-17-19, M floor{'\n'}
-                Al Manazel Building - Al Garhoud{'\n'}
-                Dubai UAE
-              </Text>
-            </View>
+          {/* Header */}
+          <View style={styles.header}>
+            <Text style={styles.headerTitle}>Contact Us</Text>
+            <Text style={styles.headerSubtitle}>Get in touch with our team</Text>
           </View>
 
-          <TouchableOpacity
-            style={styles.contactItem}
-            onPress={() => Linking.openURL('mailto:info@tubexdubai.com')}
-            activeOpacity={0.7}
-          >
-            <View style={styles.contactIconContainer}>
-              <Ionicons name="mail-outline" size={24} color="#4A90E2" />
-            </View>
-            <View style={styles.contactTextContainer}>
-              <Text style={styles.contactLabel}>Email</Text>
-              <Text style={styles.contactValueLink}>info@tubexdubai.com</Text>
-            </View>
-          </TouchableOpacity>
-
-          <TouchableOpacity
-            style={styles.contactItem}
-            onPress={() => Linking.openURL('tel:+97143976100')}
-            activeOpacity={0.7}
-          >
-            <View style={styles.contactIconContainer}>
-              <Ionicons name="call-outline" size={24} color="#4A90E2" />
-            </View>
-            <View style={styles.contactTextContainer}>
-              <Text style={styles.contactLabel}>Phone</Text>
-              <Text style={styles.contactValueLink}>+971 4 397 6100</Text>
-            </View>
-          </TouchableOpacity>
-
-          <View style={styles.contactItem}>
-            <View style={styles.contactIconContainer}>
-              <Ionicons name="time-outline" size={24} color="#4A90E2" />
-            </View>
-            <View style={styles.contactTextContainer}>
-              <Text style={styles.contactLabel}>Business Hours</Text>
-              <Text style={styles.contactValue}>
-                Monday - Friday: 09:00 AM – 05:00 PM{'\n'}
-                Saturday - Sunday: Closed
-              </Text>
-            </View>
+          {/* Contact Methods */}
+          <View style={styles.contactMethodsSection}>
+            {contactMethods.map((method, index) => (
+              <TouchableOpacity
+                key={index}
+                style={styles.contactMethodCard}
+                onPress={method.action}
+                activeOpacity={method.action ? 0.7 : 1}
+                disabled={!method.action}
+              >
+                <View style={[styles.contactIcon, { backgroundColor: `${method.color}20` }]}>
+                  <Ionicons name={method.icon} size={24} color={method.color} />
+                </View>
+                <View style={styles.contactInfo}>
+                  <Text style={styles.contactLabel}>{method.label}</Text>
+                  <Text style={styles.contactValue}>{method.value}</Text>
+                </View>
+                {method.action && (
+                  <Ionicons name="chevron-forward" size={20} color="#666" />
+                )}
+              </TouchableOpacity>
+            ))}
           </View>
 
-          <View style={styles.visitUsBox}>
-            <Ionicons name="hand-left-outline" size={32} color="#4A90E2" />
-            <Text style={styles.visitUsText}>
-              Better yet, see us in person!{'\n'}
-              We love our customers, so feel free to visit during normal business hours.
-            </Text>
-          </View>
-        </View>
-
-        <View style={styles.formContainer}>
-          <Text style={styles.formSectionTitle}>Send Us a Message</Text>
-          <View style={styles.inputGroup}>
-            <Text style={styles.label}>
-              Name <Text style={styles.required}>*</Text>
-            </Text>
-            <View style={styles.inputWrapper}>
-              <Ionicons name="person-outline" size={20} color="#666" style={styles.inputIcon} />
+          {/* Form Section */}
+          <View style={styles.formSection}>
+            <Text style={styles.formTitle}>Send Message</Text>
+            
+            <View style={styles.inputContainer}>
+              <Ionicons name="person-outline" size={20} color="#4A90E2" style={styles.inputIcon} />
               <TextInput
                 style={styles.input}
-                placeholder="Your full name"
+                placeholder="Full Name *"
                 placeholderTextColor="#999"
                 value={formData.name}
                 onChangeText={(value) => handleInputChange('name', value)}
               />
             </View>
-          </View>
 
-          <View style={styles.inputGroup}>
-            <Text style={styles.label}>
-              Email <Text style={styles.required}>*</Text>
-            </Text>
-            <View style={styles.inputWrapper}>
-              <Ionicons name="mail-outline" size={20} color="#666" style={styles.inputIcon} />
+            <View style={styles.inputContainer}>
+              <Ionicons name="mail-outline" size={20} color="#4A90E2" style={styles.inputIcon} />
               <TextInput
                 style={styles.input}
-                placeholder="your.email@example.com"
+                placeholder="Email Address *"
                 placeholderTextColor="#999"
                 keyboardType="email-address"
                 autoCapitalize="none"
@@ -226,248 +239,188 @@ export default function ContactScreen() {
                 onChangeText={(value) => handleInputChange('email', value)}
               />
             </View>
-          </View>
 
-          <View style={styles.inputGroup}>
-            <Text style={styles.label}>
-              Phone <Text style={styles.required}>*</Text>
-            </Text>
-            <View style={styles.inputWrapper}>
-              <Ionicons name="call-outline" size={20} color="#666" style={styles.inputIcon} />
+            <View style={styles.inputContainer}>
+              <Ionicons name="call-outline" size={20} color="#4A90E2" style={styles.inputIcon} />
               <TextInput
                 style={styles.input}
-                placeholder="+971 4 397 6100"
+                placeholder="Phone Number *"
                 placeholderTextColor="#999"
                 keyboardType="phone-pad"
                 value={formData.phone}
                 onChangeText={(value) => handleInputChange('phone', value)}
               />
             </View>
-          </View>
 
-          <View style={styles.inputGroup}>
-            <Text style={styles.label}>Service Interested In</Text>
-            <View style={styles.inputWrapper}>
-              <Ionicons name="briefcase-outline" size={20} color="#666" style={styles.inputIcon} />
+            <View style={styles.inputContainer}>
+              <Ionicons name="briefcase-outline" size={20} color="#4A90E2" style={styles.inputIcon} />
               <TextInput
                 style={styles.input}
-                placeholder="Select a service"
+                placeholder="Service Interested In"
                 placeholderTextColor="#999"
                 value={formData.service}
                 onChangeText={(value) => handleInputChange('service', value)}
               />
             </View>
-            <Text style={styles.hint}>
-              Services: {services.join(', ')}
-            </Text>
-          </View>
 
-          <View style={styles.inputGroup}>
-            <Text style={styles.label}>Message</Text>
-            <View style={[styles.inputWrapper, styles.textAreaWrapper]}>
+            <View style={[styles.inputContainer, styles.textAreaContainer]}>
+              <Ionicons name="chatbubble-outline" size={20} color="#4A90E2" style={styles.inputIcon} />
               <TextInput
                 style={[styles.input, styles.textArea]}
-                placeholder="Tell us about your project requirements..."
+                placeholder="Your Message"
                 placeholderTextColor="#999"
                 multiline
-                numberOfLines={6}
+                numberOfLines={4}
                 textAlignVertical="top"
                 value={formData.message}
                 onChangeText={(value) => handleInputChange('message', value)}
               />
             </View>
-          </View>
 
-          <TouchableOpacity
-            style={styles.submitButton}
-            onPress={handleSubmit}
-            activeOpacity={0.8}
-          >
-            <LinearGradient
-              colors={['#4A90E2', '#357ABD']}
-              style={styles.buttonGradient}
+            <TouchableOpacity
+              style={styles.submitButton}
+              onPress={handleSubmit}
+              activeOpacity={0.8}
             >
-              <Ionicons name="send-outline" size={20} color="#FFFFFF" style={styles.buttonIcon} />
-              <Text style={styles.buttonText}>Submit Request</Text>
-            </LinearGradient>
-          </TouchableOpacity>
-        </View>
-      </ScrollView>
-    </KeyboardAvoidingView>
+              <LinearGradient
+                colors={['#4A90E2', '#357ABD']}
+                style={styles.submitGradient}
+              >
+                <Ionicons name="send" size={20} color="#FFFFFF" />
+                <Text style={styles.submitText}>Submit</Text>
+              </LinearGradient>
+            </TouchableOpacity>
+          </View>
+        </ScrollView>
+      </KeyboardAvoidingView>
+    </SafeAreaView>
   );
 }
 
 const styles = StyleSheet.create({
+  safeArea: {
+    flex: 1,
+    backgroundColor: '#0A1628',
+  },
   container: {
     flex: 1,
-    backgroundColor: '#F5F5F5',
+    backgroundColor: '#0A1628',
   },
   scrollView: {
     flex: 1,
   },
   scrollContent: {
-    paddingBottom: 30,
+    paddingBottom: 20,
   },
   header: {
-    padding: 40,
-    paddingTop: 60,
-    alignItems: 'center',
+    backgroundColor: '#1A1A2E',
+    paddingHorizontal: 20,
+    paddingTop: 16,
+    paddingBottom: 20,
+    borderBottomWidth: 1,
+    borderBottomColor: '#2A2A3E',
   },
   headerTitle: {
-    fontSize: 32,
+    fontSize: 28,
     fontWeight: 'bold',
     color: '#FFFFFF',
-    marginTop: 15,
-    marginBottom: 10,
+    marginBottom: 4,
   },
   headerSubtitle: {
-    fontSize: 16,
+    fontSize: 14,
     color: '#4A90E2',
-    textAlign: 'center',
-    fontWeight: '300',
+    fontWeight: '500',
   },
-  contactInfoSection: {
-    padding: 20,
-    backgroundColor: '#FFFFFF',
-    marginTop: 0,
+  contactMethodsSection: {
+    padding: 16,
   },
-  sectionTitle: {
-    fontSize: 24,
-    fontWeight: 'bold',
-    color: '#0A1628',
-    marginBottom: 20,
-  },
-  contactItem: {
+  contactMethodCard: {
+    backgroundColor: '#1A1A2E',
+    borderRadius: 12,
+    padding: 16,
+    marginBottom: 12,
     flexDirection: 'row',
-    marginBottom: 25,
-    alignItems: 'flex-start',
+    alignItems: 'center',
+    borderWidth: 1,
+    borderColor: '#2A2A3E',
   },
-  contactIconContainer: {
+  contactIcon: {
     width: 48,
     height: 48,
     borderRadius: 24,
-    backgroundColor: '#F0F7FF',
     justifyContent: 'center',
     alignItems: 'center',
-    marginRight: 15,
+    marginRight: 12,
   },
-  contactTextContainer: {
+  contactInfo: {
     flex: 1,
   },
   contactLabel: {
-    fontSize: 14,
+    fontSize: 12,
     fontWeight: '600',
-    color: '#666',
-    marginBottom: 5,
+    color: '#4A90E2',
+    marginBottom: 4,
     textTransform: 'uppercase',
     letterSpacing: 0.5,
   },
   contactValue: {
-    fontSize: 16,
-    color: '#333',
-    lineHeight: 22,
+    fontSize: 14,
+    color: '#FFFFFF',
+    lineHeight: 20,
   },
-  contactValueLink: {
-    fontSize: 16,
-    color: '#4A90E2',
-    fontWeight: '500',
+  formSection: {
+    padding: 16,
   },
-  visitUsBox: {
-    backgroundColor: '#F0F7FF',
-    borderRadius: 12,
-    padding: 20,
-    marginTop: 10,
-    alignItems: 'center',
-  },
-  visitUsText: {
-    fontSize: 16,
-    color: '#333',
-    textAlign: 'center',
-    marginTop: 10,
-    lineHeight: 22,
-  },
-  formContainer: {
-    padding: 20,
-    backgroundColor: '#F5F5F5',
-  },
-  formSectionTitle: {
-    fontSize: 24,
-    fontWeight: 'bold',
-    color: '#0A1628',
-    marginBottom: 20,
-  },
-  inputGroup: {
-    marginBottom: 20,
-  },
-  label: {
-    fontSize: 16,
+  formTitle: {
+    fontSize: 20,
     fontWeight: '600',
-    color: '#333',
-    marginBottom: 8,
+    color: '#FFFFFF',
+    marginBottom: 16,
   },
-  required: {
-    color: '#FF6B6B',
-  },
-  inputWrapper: {
+  inputContainer: {
     flexDirection: 'row',
     alignItems: 'center',
-    backgroundColor: '#FFFFFF',
+    backgroundColor: '#1A1A2E',
     borderRadius: 12,
     borderWidth: 1,
-    borderColor: '#E0E0E0',
-    paddingHorizontal: 15,
-    minHeight: 50,
+    borderColor: '#2A2A3E',
+    marginBottom: 12,
+    paddingHorizontal: 16,
+    minHeight: 52,
   },
   inputIcon: {
-    marginRight: 10,
+    marginRight: 12,
   },
   input: {
     flex: 1,
-    fontSize: 16,
-    color: '#333',
-    paddingVertical: 12,
+    fontSize: 15,
+    color: '#FFFFFF',
+    paddingVertical: 14,
   },
-  textAreaWrapper: {
+  textAreaContainer: {
     alignItems: 'flex-start',
-    paddingVertical: 15,
-    minHeight: 150,
-  },
-  textArea: {
+    paddingVertical: 12,
     minHeight: 120,
   },
-  hint: {
-    fontSize: 12,
-    color: '#666',
-    marginTop: 5,
-    fontStyle: 'italic',
+  textArea: {
+    minHeight: 100,
+    paddingTop: 12,
   },
   submitButton: {
     borderRadius: 12,
     overflow: 'hidden',
-    marginTop: 10,
-    shadowColor: '#4A90E2',
-    shadowOffset: {
-      width: 0,
-      height: 4,
-    },
-    shadowOpacity: 0.3,
-    shadowRadius: 8,
-    elevation: 8,
+    marginTop: 8,
   },
-  buttonGradient: {
-    paddingVertical: 18,
-    paddingHorizontal: 32,
-    alignItems: 'center',
+  submitGradient: {
+    paddingVertical: 16,
     flexDirection: 'row',
+    alignItems: 'center',
     justifyContent: 'center',
+    gap: 8,
   },
-  buttonIcon: {
-    marginRight: 10,
-  },
-  buttonText: {
+  submitText: {
     color: '#FFFFFF',
-    fontSize: 18,
-    fontWeight: 'bold',
+    fontSize: 16,
+    fontWeight: '600',
   },
 });
-

@@ -17,23 +17,31 @@ function ServicesStack() {
     <Stack.Navigator
       screenOptions={{
         headerStyle: {
-          backgroundColor: '#0A1628',
+          backgroundColor: '#1A1A2E',
         },
         headerTintColor: '#fff',
         headerTitleStyle: {
-          fontWeight: 'bold',
+          fontWeight: '600',
+          fontSize: 18,
+        },
+        headerShadowVisible: false,
+        contentStyle: {
+          backgroundColor: '#0A1628',
         },
       }}
     >
       <Stack.Screen 
         name="ServicesList" 
         component={ServicesScreen}
-        options={{ title: 'Our Services' }}
+        options={{ headerShown: false }}
       />
       <Stack.Screen 
         name="ServiceDetail" 
         component={ServiceDetailScreen}
-        options={{ title: 'Service Details' }}
+        options={{ 
+          title: 'Service Details',
+          headerShown: true,
+        }}
       />
     </Stack.Navigator>
   );
@@ -62,38 +70,59 @@ export default function AppNavigator() {
         tabBarInactiveTintColor: '#8E8E93',
         tabBarStyle: {
           backgroundColor: '#1A1A2E',
-          borderTopColor: '#0A1628',
+          borderTopColor: '#2A2A3E',
+          borderTopWidth: 1,
+          height: 60,
+          paddingBottom: 8,
+          paddingTop: 8,
+        },
+        tabBarLabelStyle: {
+          fontSize: 12,
+          fontWeight: '500',
         },
         headerStyle: {
-          backgroundColor: '#0A1628',
+          backgroundColor: '#1A1A2E',
         },
         headerTintColor: '#fff',
         headerTitleStyle: {
-          fontWeight: 'bold',
+          fontWeight: '600',
+          fontSize: 18,
         },
+        headerShadowVisible: false,
       })}
     >
       <Tab.Screen 
         name="Home" 
         component={HomeScreen}
-        options={{ headerShown: false }}
+        options={{ 
+          headerShown: false,
+          tabBarLabel: 'Home',
+        }}
       />
       <Tab.Screen 
         name="Services" 
         component={ServicesStack}
-        options={{ headerShown: false }}
+        options={{ 
+          headerShown: false,
+          tabBarLabel: 'Services',
+        }}
       />
       <Tab.Screen 
         name="Contact" 
         component={ContactScreen}
-        options={{ title: 'Contact Us' }}
+        options={{ 
+          headerShown: false,
+          tabBarLabel: 'Contact',
+        }}
       />
       <Tab.Screen 
         name="About" 
         component={AboutScreen}
-        options={{ title: 'About Us' }}
+        options={{ 
+          headerShown: false,
+          tabBarLabel: 'About',
+        }}
       />
     </Tab.Navigator>
   );
 }
-
