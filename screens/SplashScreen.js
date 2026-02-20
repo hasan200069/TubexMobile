@@ -8,8 +8,8 @@ export default function SplashScreen() {
       colors={['#0A1628', '#1A1A2E', '#16213E']}
       style={styles.container}
     >
-      <Image 
-        source={require('../assets/logo.png')} 
+      <Image
+        source={require('../assets/logo.png')}
         style={styles.logo}
         resizeMode="contain"
       />

@@ -1,4 +1,5 @@
 import React from 'react';
+import { Platform, View } from 'react-native';
 import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
 import { createNativeStackNavigator } from '@react-navigation/native-stack';
 import { Ionicons } from '@expo/vector-icons';
@@ -16,33 +17,13 @@ function ServicesStack() {
   return (
     <Stack.Navigator
       screenOptions={{
-        headerStyle: {
-          backgroundColor: '#1A1A2E',
-        },
-        headerTintColor: '#fff',
-        headerTitleStyle: {
-          fontWeight: '600',
-          fontSize: 18,
-        },
-        headerShadowVisible: false,
-        contentStyle: {
-          backgroundColor: '#0A1628',
-        },
+        headerShown: false,
+        contentStyle: { backgroundColor: '#0A1628' },
+        animation: 'slide_from_right',
       }}
     >
-      <Stack.Screen 
-        name="ServicesList" 
-        component={ServicesScreen}
-        options={{ headerShown: false }}
-      />
-      <Stack.Screen 
-        name="ServiceDetail" 
-        component={ServiceDetailScreen}
-        options={{ 
-          title: 'Service Details',
-          headerShown: true,
-        }}
-      />
+      <Stack.Screen name="ServicesList" component={ServicesScreen} />
+      <Stack.Screen name="ServiceDetail" component={ServiceDetailScreen} />
     </Stack.Navigator>
   );
 }
@@ -51,78 +32,38 @@ export default function AppNavigator() {
   return (
     <Tab.Navigator
       screenOptions={({ route }) => ({
+        headerShown: false,
         tabBarIcon: ({ focused, color, size }) => {
-          let iconName;
-
-          if (route.name === 'Home') {
-            iconName = focused ? 'home' : 'home-outline';
-          } else if (route.name === 'Services') {
-            iconName = focused ? 'grid' : 'grid-outline';
-          } else if (route.name === 'Contact') {
-            iconName = focused ? 'mail' : 'mail-outline';
-          } else if (route.name === 'About') {
-            iconName = focused ? 'information-circle' : 'information-circle-outline';
-          }
-
-          return <Ionicons name={iconName} size={size} color={color} />;
+          const icons = {
+            Home: focused ? 'home' : 'home-outline',
+            Services: focused ? 'grid' : 'grid-outline',
+            Contact: focused ? 'mail' : 'mail-outline',
+            About: focused ? 'information-circle' : 'information-circle-outline',
+          };
+          return <Ionicons name={icons[route.name]} size={focused ? size + 1 : size} color={color} />;
         },
         tabBarActiveTintColor: '#4A90E2',
-        tabBarInactiveTintColor: '#8E8E93',
+        tabBarInactiveTintColor: '#3A4A5E',
         tabBarStyle: {
-          backgroundColor: '#1A1A2E',
-          borderTopColor: '#2A2A3E',
+          backgroundColor: '#0D1B2A',
+          borderTopColor: '#1A2A3E',
           borderTopWidth: 1,
-          height: 60,
-          paddingBottom: 8,
+          height: Platform.OS === 'ios' ? 84 : 64,
+          paddingBottom: Platform.OS === 'ios' ? 28 : 10,
           paddingTop: 8,
         },
         tabBarLabelStyle: {
-          fontSize: 12,
-          fontWeight: '500',
+          fontSize: 11,
+          fontWeight: '700',
+          letterSpacing: 0.2,
         },
-        headerStyle: {
-          backgroundColor: '#1A1A2E',
-        },
-        headerTintColor: '#fff',
-        headerTitleStyle: {
-          fontWeight: '600',
-          fontSize: 18,
-        },
-        headerShadowVisible: false,
+        tabBarHideOnKeyboard: true,
       })}
     >
-      <Tab.Screen 
-        name="Home" 
-        component={HomeScreen}
-        options={{ 
-          headerShown: false,
-          tabBarLabel: 'Home',
-        }}
-      />
-      <Tab.Screen 
-        name="Services" 
-        component={ServicesStack}
-        options={{ 
-          headerShown: false,
-          tabBarLabel: 'Services',
-        }}
-      />
-      <Tab.Screen 
-        name="Contact" 
-        component={ContactScreen}
-        options={{ 
-          headerShown: false,
-          tabBarLabel: 'Contact',
-        }}
-      />
-      <Tab.Screen 
-        name="About" 
-        component={AboutScreen}
-        options={{ 
-          headerShown: false,
-          tabBarLabel: 'About',
-        }}
-      />
+      <Tab.Screen name="Home" component={HomeScreen} options={{ tabBarLabel: 'Home' }} />
+      <Tab.Screen name="Services" component={ServicesStack} options={{ tabBarLabel: 'Services' }} />
+      <Tab.Screen name="Contact" component={ContactScreen} options={{ tabBarLabel: 'Contact' }} />
+      <Tab.Screen name="About" component={AboutScreen} options={{ tabBarLabel: 'About' }} />
     </Tab.Navigator>
   );
 }
